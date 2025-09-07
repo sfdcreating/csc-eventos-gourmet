@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de Administración</title>
+  <style>
+    body { font-family: Arial; margin: 40px; background-color: #f0f0f0; }
+    h1, h2 { color: #333; }
+    label { display: block; margin-top: 10px; font-weight: bold; }
+    input, select, button { width: 100%; padding: 8px; margin-top: 5px; }
+    .section { background: #fff; padding: 20px; margin-bottom: 30px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    ul { list-style: none; padding-left: 0; }
+    li { margin-bottom: 5px; }
+    .item { display: flex; justify-content: space-between; align-items: center; }
+    .item span { flex: 1; }
+    .item button { margin-left: 10px; }
+  </style>
+</head>
+<body>
+
+  <h1>Panel de Administración</h1>
+
+  <div class="section">
+    <h2>Tipos de Evento</h2>
+    <label for="nuevoEvento">Añadir tipo de evento:</label>
+    <input type="text" id="nuevoEvento">
+    <button onclick="agregarEvento()">Guardar tipo</button>
+    <ul id="listaEventos"></ul>
+  </div>
+
+  <div class="section">
+    <h2>Categorías de Platos</h2>
+    <label for="nuevaCategoria">Añadir categoría:</label>
+    <input type="text" id="nuevaCategoria">
+    <button onclick="agregarCategoria()">Guardar categoría</button>
+    <ul id="listaCategorias"></ul>
+  </div>
+
+  <div class="section">
+    <h2>Platos por Categoría</h2>
+    <label for="nombrePlato">Nombre del plato:</label>
+    <input type="text" id="nombrePlato">
+
+    <label for="categoriaPlato">Categoría:</label>
+    <select id="categoriaPlato"></select>
+
+    <button onclick="agregarPlato()">Guardar plato</button>
+    <ul id="listaPlatos"></ul>
+  </div>
+
+  <script>
+    // Tipos de evento
+    const listaEventos = document.getElementById("listaEventos");
+    let eventos = JSON.parse(localStorage.getItem("tiposEvento")) || [];
+
+    function agregarEvento() {
+      const nuevo = document.getElementById("nuevoEvento").value.trim();
+      if (nuevo && !eventos.includes(nuevo)) {
+        eventos.push(nuevo);
+        guardarEventos();
+        document.getElementById("nuevoEvento").value = "";
+      }
+    }
+
+    function eliminarEvento(index) {
+      eventos.splice(index, 1);
+      guardarEventos();
+    }
+
+    function guardarEventos() {
+      localStorage.setItem("tiposEvento", JSON.stringify(eventos));
+      mostrarEventos();
+    }
+
+    function mostrarEventos() {
+      listaEventos.innerHTML = "";
+      eventos.forEach((e, i) => {
+        const li = document.createElement("li");
+        li.className = "item";
+        li.innerHTML = `<span>${e}</span><button onclick="eliminarEvento(${i})">Eliminar</button>`;
+        listaEventos.appendChild(li);
+      });
+    }
+
+    mostrarEventos();
+
+    // Categorías
+    const listaCategorias = document.getElementById("listaCategorias");
+    let categorias = JSON.parse(localStorage.getItem("categoriasPlato")) || [];
+
+    function agregarCategoria() {
+      const nueva = document.getElementById("nuevaCategoria").value.trim();
+      if (nueva && !categorias.includes(nueva)) {
+        categorias.push(nueva);
+        guardarCategorias();
+        document.getElementById("nuevaCategoria").value = "";
+      }
+    }
+
+    function eliminarCategoria(index) {
+      categorias.splice(index, 1);
+      guardarCategorias();
+    }
+
+    function guardarCategorias() {
+      localStorage.setItem("categoriasPlato", JSON.stringify(categorias));
+      mostrarCategorias();
+      actualizarSelectorCategorias();
+    }
+
+    function mostrarCategorias() {
+      listaCategorias.innerHTML = "";
+      categorias.forEach((c, i) => {
+        const li = document.createElement("li");
+        li.className = "item";
+        li.innerHTML = `<span>${c}</span><button onclick="eliminarCategoria(${i})">Eliminar</button>`;
+        listaCategorias.appendChild(li);
+      });
+    }
+
+    mostrarCategorias();
+
+    // Platos
+    const listaPlatos = document.getElementById("listaPlatos");
+    let platos = JSON.parse(localStorage.getItem("platos")) || [];
+
+    function agregarPlato() {
+      const nombre = document.getElementById("nombrePlato").value.trim();
+      const categoria = document.getElementById("categoriaPlato").value;
+      if (nombre) {
+        platos.push({ nombre, categoria });
+        guardarPlatos();
+        document.getElementById("nombrePlato").value = "";
+      }
+    }
+
+    function eliminarPlato(index) {
+      platos.splice(index, 1);
+      guardarPlatos();
+    }
+
+    function guardarPlatos() {
+      localStorage.setItem("platos", JSON.stringify(platos));
+      mostrarPlatos();
+    }
+
+    function mostrarPlatos() {
+      listaPlatos.innerHTML = "";
+      platos.forEach((p, i) => {
+        const li = document.createElement("li");
+        li.className = "item";
+        li.innerHTML = `<span>${p.nombre} (${p.categoria})</span><button onclick="eliminarPlato(${i})">Eliminar</button>`;
+        listaPlatos.appendChild(li);
+      });
+    }
+
+    function actualizarSelectorCategorias() {
+      const selector = document.getElementById("categoriaPlato");
+      selector.innerHTML = "";
+      categorias.forEach(c => {
+        const option = document.createElement("option");
+        option.value = c;
+        option.textContent = c;
+        selector.appendChild(option);
+      });
+    }
+
+    mostrarPlatos();
+    actualizarSelectorCategorias();
+  </script>
+
+</body>
+</html>

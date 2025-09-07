@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulario de Evento</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 40px;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    h1 { color: #2c3e50; }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+    .form-section {
+      margin-bottom: 30px;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 5px solid #0078D4;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #0078D4;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+
+    @media print {
+      body {
+        background: white;
+        margin: 0;
+        padding: 0;
+        font-size: 12pt;
+      }
+      #formularioEvento, #listaEventos, button {
+        display: none;
+      }
+      #fichaEvento {
+        display: block !important;
+        margin: 0;
+        padding: 2cm;
+        width: 21cm;
+        height: 29.7cm;
+        box-sizing: border-box;
+        page-break-after: always;
+      }
+      #contenidoFicha h3 {
+        font-size: 14pt;
+        margin-top: 30px;
+        margin-bottom: 10px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid #ccc;
+        color: #0078D4;
+      }
+      #contenidoFicha .bloque {
+        background-color: #fdfdfd;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+      }
+      #encabezadoEmpresa {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      #encabezadoEmpresa img {
+        height: 80px;
+        margin-bottom: 10px;
+      }
+      #encabezadoEmpresa strong {
+        font-size: 18pt;
+      }
+      #encabezadoEmpresa span {
+        font-size: 11pt;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Nuevo Evento Gastronómico</h1>
+
+  <form id="formularioEvento">
+    <div class="form-section">
+      <h2>Datos del Cliente</h2>
+      <label for="nombre">Nombre:</label>
+      <input type="text" id="nombre">
+      <label for="telefono">Teléfono:</label>
+      <input type="text" id="telefono">
+      <label for="email">Email:</label>
+      <input type="email" id="email">
+      <label for="poblacion">Población:</label>
+      <input type="text" id="poblacion">
+    </div>
+
+    <div class="form-section">
+      <h2>Datos del Evento</h2>
+      <label for="tipo_evento">Tipo de evento:</label>
+      <select id="tipo_evento"></select>
+      <label for="fecha">Fecha:</label>
+      <input type="date" id="fecha">
+      <label for="franja">Franja horaria:</label>
+      <select id="franja">
+        <option value="Mañana">Mañana</option>
+        <option value="Mediodía">Mediodía</option>
+        <option value="Tarde">Tarde</option>
+        <option value="Noche">Noche</option>
+      </select>
+      <label for="comensales">Número de comensales:</label>
+      <input type="number" id="comensales">
+      <label for="precio">Precio por persona (€):</label>
+      <input type="number" id="precio" step="0.01">
+    </div>
+
+    <div class="form-section" id="bloquePlatos">
+      <h2>Selección de Platos</h2>
+    </div>
+
+    <div class="form-section">
+      <h2>Notas adicionales</h2>
+      <label for="notas">Observaciones:</label>
+      <textarea id="notas" rows="5"></textarea>
+    </div>
+
+    <button type="submit">Guardar evento</button>
+  </form>
+
+  <div id="listaEventos" style="margin-top:40px;">
+    <h2>Eventos guardados</h2>
+    <ul id="eventosGuardados"></ul>
+  </div>
+
+  <div id="fichaEvento" style="display:none; margin-top:40px;">
+    <div id="encabezadoEmpresa">
+      <img src="logo.png" alt="Logo de la empresa">
+      <strong>Eventos Gourmet Cuevas</strong><br>
+      <span>Cuevas de San Marcos · Tel: 600 123 456 · eventos@cuevasgourmet.com</span>
+    </div>
+    <h2>Ficha del Evento</h2>
+    <div id="contenidoFicha"></div>
+    <button onclick="window.print()">Imprimir</button>
+  </div>
+
+  <script>
+    const tipoEventoSelect = document.getElementById("tipo_evento");
+    const tiposEvento = JSON.parse(localStorage.getItem("tiposEvento")) || [];
+    tiposEvento.forEach(tipo => {
+      const option = document.createElement("option");
+      option.value = tipo;
+      option.textContent = tipo;
+      tipoEventoSelect.appendChild(option);
+    });
+
+    const categorias = JSON.parse(localStorage.getItem("categoriasPlato")) || [];
+    const platos = JSON.parse(localStorage.getItem("platos")) || [];
+    const bloquePlatos = document.getElementById("bloquePlatos");
+
+    categorias.forEach(cat => {
+      const label = document.createElement("label");
+      label.textContent = cat.charAt(0).toUpperCase() + cat.slice(1) + ":";
+
+      const select = document.createElement("select");
+      select.multiple = true;
+      select.name = cat;
+      select.style.height = "100px";
+
+      platos.filter(p => p.categoria === cat).forEach(plato => {
+        const option = document.createElement("option");
+        option.value = plato.nombre;
+        option.textContent = plato.nombre;
+        select.appendChild(option);
+      });
+
+      bloquePlatos.appendChild(label);
+      bloquePlatos.appendChild(select);
+    });
+
+    document.getElementById("formularioEvento").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const datos = {
+        cliente: {
+          nombre: document.getElementById("nombre").value,
+          telefono: document.getElementById("telefono").value,
+          email: document.getElementById("email").value,
+          poblacion: document.getElementById("poblacion").value
+        },
+        evento: {
+          tipo: document.getElementById("tipo_evento").value,
+          fecha: document.getElementById("fecha").value,
+          franja: document.getElementById("franja").value,
+          comensales: document.getElementById("comensales").value,
+          precio: document.getElementById("precio").value,
+          notas: document.getElementById("notas").value
+        },
+        platos: {}
+      };
+
+      categorias.forEach(cat => {
+        const seleccionados = Array.from(document.getElementsByName(cat)[0].selectedOptions).map(opt => opt.value);
+        datos.platos[cat] = seleccionados;
+      });
+
+      const eventosGuardados = JSON.parse(localStorage.getItem("eventosGuardados")) || [];
+      eventosGuardados.push(datos);
+      localStorage.setItem("eventosGuardados", JSON.stringify(eventosGuardados));
+      mostrarEventosGuardados();
+      mostrarFicha(datos);
+    });
+
+    function mostrarFicha(datos) {
+      const ficha = document
