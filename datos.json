@@ -1,0 +1,14 @@
+{
+  "tiposEvento": ["Boda", "Cóctel", "Comunión"],
+  "categoriasPlato": ["Entrantes", "Plato principal", "Postres", "Bebidas"],
+  "platos": [
+    { "nombre": "Jamón ibérico", "categoria": "Entrantes" },
+    { "nombre": "Ensalada de queso de cabra", "categoria": "Entrantes" },
+    { "nombre": "Solomillo al Pedro Ximénez", "categoria": "Plato principal" },
+    { "nombre": "Lubina al horno", "categoria": "Plato principal" },
+    { "nombre": "Tarta de queso", "categoria": "Postres" },
+    { "nombre": "Mousse de chocolate", "categoria": "Postres" },
+    { "nombre": "Vino tinto", "categoria": "Bebidas" },
+    { "nombre": "Agua mineral", "categoria": "Bebidas" }
+  ]
+}
